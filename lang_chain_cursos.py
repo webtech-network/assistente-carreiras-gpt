@@ -9,8 +9,8 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
 
 import bs4
 from langchain import hub
-from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_retrieval_chain
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.prompts import ChatPromptTemplate
@@ -20,6 +20,8 @@ from langchain_community.document_loaders import PyMuPDFLoader
 
 # 1. Load, chunk and index the contents of the blog to create a retriever.
 from langchain_community.document_loaders import PyPDFLoader
+
+print("Inicializando")
 
 loader = PyPDFLoader("DATA/Cursos_completos.pdf", extract_images=True)
 docs = loader.load()
@@ -34,9 +36,9 @@ retriever = vectorstore.as_retriever()
 system_prompt = (
     "Você é um assistente que auxilia pessoas a acharem o curso ideal para elas"
     "O dados dcursos estao contidos no pdf qu elhe foi fornecido"
-    "você deve utilizar como base APENAS OS CURSOS DO PDF"
-    "e não deve respoonder nada alem do que uma assistente de carreiras saberia"
-    "answer concise."
+    "Você deve utilizar como base APENAS OS CURSOS DO PDF"
+    "E não deve respoonder nada alem do que uma assistente de carreiras saberia"
+    "Você esta a serviso da universidade PUC minas (Pontificia Univercidade Catolica)"
     "\n\n"
     "{context}"
 )
@@ -50,9 +52,6 @@ prompt = ChatPromptTemplate.from_messages(
 
 question_answer_chain = create_stuff_documents_chain(llm, prompt)
 rag_chain = create_retrieval_chain(retriever, question_answer_chain)
-
-response = rag_chain.invoke({"input": "What is Task Decomposition?"})
-response["answer"]
 
 # Adding chat history
 from langchain.chains import create_history_aware_retriever
@@ -97,55 +96,15 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 chat_history = []
 
-question = "Sou formado em ciência da computação, mas eu tenho um bom senso de liderança. Qual curso  devo fazer?"
-ai_msg_1 = rag_chain.invoke({"input": question, "chat_history": chat_history})
-chat_history.extend(
-    [
-        HumanMessage(content=question),
-        AIMessage(content=ai_msg_1["answer"]),
-    ]
-)
+print("Digite sua pergunta:")
 
-print(ai_msg_1["answer"])
+while True:
+  # Pergunta ao usuário
+  question = input("Digite sua pergunta: ")
 
-print("")
+  # Processa a pergunta e gera a resposta da IA
+  ai_msg_1 = rag_chain.invoke({"input": question, "chat_history": chat_history})
+  chat_history.extend([HumanMessage(content=question), AIMessage(content=ai_msg_1["answer"])])
 
-second_question = "E se eu quiser trabalhar com dados?"
-ai_msg_2 = rag_chain.invoke({"input": second_question, "chat_history": chat_history})
-
-print(ai_msg_2["answer"])
-
-print("")
-
-thirt_question = "Muito obrigado tenha uma boa noite"
-ai_msg_3 = rag_chain.invoke({"input": thirt_question, "chat_history": chat_history})
-
-print(ai_msg_3["answer"])
-
-from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory
-
-store = {}
-
-
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    if session_id not in store:
-        store[session_id] = ChatMessageHistory()
-    return store[session_id]
-
-
-conversational_rag_chain = RunnableWithMessageHistory(
-    rag_chain,
-    get_session_history,
-    input_messages_key="input",
-    history_messages_key="chat_history",
-    output_messages_key="answer",
-)
-
-conversational_rag_chain.invoke(
-    {"input": "E se eu quiser trabalhar com dados?"},
-    config={
-        "configurable": {"session_id": "abc123"}
-    },  # constructs a key "abc123" in `store`.
-)["answer"]
+  # Imprime a resposta da IA
+  print(ai_msg_1["answer"])
