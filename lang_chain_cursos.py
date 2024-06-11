@@ -1,12 +1,5 @@
 import getpass
 import os
-
-os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
-
-from langchain_openai import ChatOpenAI
-
-llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
-
 import bs4
 from langchain import hub
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -16,13 +9,20 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyMuPDFLoader
+from langchain.chains import create_history_aware_retriever
+from langchain_core.prompts import MessagesPlaceholder
+from langchain_openai import ChatOpenAI
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
 
-# 1. Load, chunk and index the contents of the blog to create a retriever.
-from langchain_community.document_loaders import PyPDFLoader
+os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 
+llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
+
+# 1. Carregar dividir e indexar o conteudo do arquivo
 print("Inicializando")
 
+from langchain_community.document_loaders import PyPDFLoader
 loader = PyPDFLoader("DATA/Cursos_completos.pdf", extract_images=True)
 docs = loader.load()
 
@@ -31,11 +31,10 @@ splits = text_splitter.split_documents(docs)
 vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
 retriever = vectorstore.as_retriever()
 
-
-# 2. Incorporate the retriever into a question-answering chain.
+# 2. Incorporar o retriver dentro da corrente de resposta do chat
 system_prompt = (
     "Você é um assistente que auxilia pessoas a acharem o curso ideal para elas"
-    "O dados dcursos estao contidos no pdf qu elhe foi fornecido"
+    "O dados dcursos estao contidos no pdf que lhe foi fornecido"
     "Você deve utilizar como base APENAS OS CURSOS DO PDF"
     "E não deve respoonder nada alem do que uma assistente de carreiras saberia"
     "Você esta a serviso da universidade PUC minas (Pontificia Univercidade Catolica)"
@@ -53,16 +52,12 @@ prompt = ChatPromptTemplate.from_messages(
 question_answer_chain = create_stuff_documents_chain(llm, prompt)
 rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
-# Adding chat history
-from langchain.chains import create_history_aware_retriever
-from langchain_core.prompts import MessagesPlaceholder
-
+# Adicionando Historico do chat
 contextualize_q_system_prompt = (
-    "Given a chat history and the latest user question "
-    "which might reference context in the chat history, "
-    "formulate a standalone question which can be understood "
-    "without the chat history. Do NOT answer the question, "
-    "just reformulate it if needed and otherwise return it as is."
+    "O aluno ira te repassar perguntas relacionadas aos cursos"
+    "A duvida pode ser relacionada a uma diciplina a um curso ou alguma ajuda mara escolher um curso"
+    "VocÊ apenas tem acesso a cursos da pos-gradução PUC Minas "
+    "VOCE NÃO DEVE RESPONDER NADA QUE NÃO ESTEJA RELACIONADO A CURSOS"
 )
 
 contextualize_q_prompt = ChatPromptTemplate.from_messages(
@@ -76,8 +71,6 @@ history_aware_retriever = create_history_aware_retriever(
     llm, retriever, contextualize_q_prompt
 )
 
-from langchain.chains import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
 
 qa_prompt = ChatPromptTemplate.from_messages(
     [
