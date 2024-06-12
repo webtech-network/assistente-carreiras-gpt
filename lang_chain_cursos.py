@@ -12,8 +12,6 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 
-os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
-
 llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
 
 # 1. Carregar dividir e indexar o conteudo do arquivo
