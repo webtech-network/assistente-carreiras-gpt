@@ -65,6 +65,7 @@ question_answer_chain = create_stuff_documents_chain(llm, prompt)
 rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
 # Adicionando Historico do chat
+# TODO: Checar, tá com o mesmo comando do System.prompt.
 contextualize_q_system_prompt = (
     "O aluno ira te repassar perguntas relacionadas aos cursos"
     "A duvida pode ser relacionada a uma diciplina a um curso ou alguma ajuda mara escolher um curso"
@@ -79,10 +80,10 @@ contextualize_q_prompt = ChatPromptTemplate.from_messages(
         ("human", "{input}"),
     ]
 )
+
 history_aware_retriever = create_history_aware_retriever(
     llm, retriever, contextualize_q_prompt
 )
-
 
 qa_prompt = ChatPromptTemplate.from_messages(
     [
@@ -92,17 +93,17 @@ qa_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-
+#Corrente 
 question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
 from langchain_core.messages import AIMessage, HumanMessage
 
+# Vetor do chat
 chat_history = []
 
 print("Digite sua pergunta:")
-
 while True:
   # Pergunta ao usuário
   question = input("Digite sua pergunta: ")
