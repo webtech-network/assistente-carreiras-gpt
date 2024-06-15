@@ -12,7 +12,13 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 
-llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
+llm = ChatOpenAI(
+    model="gpt-4o",
+    temperature=0.7, # A temperatura varia de 0 ate 1
+    max_tokens=None,
+    timeout=None,
+    max_retries=2
+    )
 
 # 1. Carregar dividir e indexar o conteudo do arquivo
 print("Inicializando")
@@ -103,7 +109,6 @@ from langchain_core.messages import AIMessage, HumanMessage
 # Vetor do chat
 chat_history = []
 
-print("Digite sua pergunta:")
 while True:
   # Pergunta ao usuário
   question = input("Digite sua pergunta: ")
