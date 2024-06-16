@@ -1,30 +1,30 @@
-import getpass
-import os
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
+from langchain.chains import create_history_aware_retriever
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain.chains import create_history_aware_retriever
 from langchain_core.prompts import MessagesPlaceholder
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
-from langchain.chains import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_community.document_loaders import PyPDFLoader
 
 llm = ChatOpenAI(
     model="gpt-4o",
     temperature=0.7, # A temperatura varia de 0 ate 1
     max_tokens=None,
-    timeout=None,
-    max_retries=2
+    # timeout=None,
+    # max_retries=2
     )
 
 # 1. Carregar dividir e indexar o conteudo do arquivo
 print("Inicializando")
 
-from langchain_community.document_loaders import PyPDFLoader
-loader = PyPDFLoader("DATA/Cursos_completos.pdf", extract_images=True)
+
+loader = PyPDFLoader("DATA/Cursos_completos.pdf", extract_images=False)
 docs = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
@@ -104,7 +104,6 @@ question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
-from langchain_core.messages import AIMessage, HumanMessage
 
 # Vetor do chat
 chat_history = []
