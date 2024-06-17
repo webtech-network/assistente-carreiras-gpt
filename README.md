@@ -46,3 +46,6 @@ espera o comando abaixo desta linha específica ser concluído
 ```bash
 pip install langchain langchain_chroma langchain_core langchain_text_splitters langchain_openai langchain_community
 ```
+
+> [!important]
+> É de suma nessesario que tenha a chave da api (OPENAI_API_KEY) COLOCADA NAS VARIAVEIS DE AMBIENTE
