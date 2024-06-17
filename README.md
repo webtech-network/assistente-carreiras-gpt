@@ -48,4 +48,6 @@ pip install langchain langchain_chroma langchain_core langchain_text_splitters l
 ```
 
 > [!important]
-> É de suma nessesario que tenha a chave da api (OPENAI_API_KEY) COLOCADA NAS VARIAVEIS DE AMBIENTE
+> É recomendado que tenha a chave da api (OPENAI_API_KEY) COLOCADA NAS VARIAVEIS DE AMBIENTE
+>
+> porem caso não seja possivel altere a linha de [configuração](https://github.com/WebTech-PUC-Minas/assistente-carreiras-gpt/blob/main/lang_chain_cursos.py#L17 "Click para ir para a linha do codigo") da OPENAI

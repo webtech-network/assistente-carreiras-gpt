@@ -12,10 +12,15 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders import PyPDFLoader
 
+# Caso não seja possivel colocar a chave nas variaveis de ambiente incira manualmente aqui
+# Senao deixe vazio
+openai_api_key=""
+
 llm = ChatOpenAI(
     model="gpt-4o",
     temperature=0.7, # A temperatura varia de 0 ate 1
     max_tokens=None,
+    api_key=openai_api_key,
     # timeout=None,
     # max_retries=2
     )
@@ -29,7 +34,7 @@ docs = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 splits = text_splitter.split_documents(docs)
-vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
+vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings(api_key=openai_api_key))
 retriever = vectorstore.as_retriever()
 
 # 2. Incorporar o retriver dentro da corrente de resposta do chat
