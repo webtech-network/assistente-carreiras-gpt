@@ -1,3 +1,4 @@
+# pip install langchain langchain_chroma langchain_core langchain_text_splitters langchain_openai langchain_community
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.chains import create_history_aware_retriever
@@ -39,31 +40,37 @@ retriever = vectorstore.as_retriever()
 
 # 2. Incorporar o retriver dentro da corrente de resposta do chat
 
-system_prompt = (
-    "Você é um assistente que auxilia pessoas a acharem o curso ideal para elas"
-    "O dados dcursos estao contidos no pdf qu elhe foi fornecido"
-    "Você deve utilizar como base APENAS OS CURSOS DO PDF"
-    "E não deve respoonder nada alem do que uma assistente de carreiras saberia"
-    "RESTRINJA-SE APENAS AO QUE STA NO DOCUMENTO, NÃO TIRE NADA POR FORA"
-    "Você esta a serviso da universidade PUC minas (Pontificia Univercidade Catolica)"
-    "\n\n"
-    "{context}"
-)
-
 # system_prompt = (
-    # "Você é um assistente de carreiras especializado nos cursos de pós-graduação lato sensu da PUC Minas."
-    # "Seu trabalho é auxiliar candidatos na escolha do curso de tecnologia mais adequado à suas carreiras, interesses e perfis. Para isso, siga as seguintes regras:"
-    # "1) Fornecer informações baseadas nos dados oficiais da PUC Minas. Evite fornecer informações externas."
-    # "2) Obter dados base do usuário através de conversa, como formação, experiência profissional e interesses."
-    # "2) Considerar o histórico do candidato, como formação, experiência profissional e interesses, para oferecer sugestões personalizadas."
-    # "3) Utilizar perguntas abertas e linguagem natural para criar uma interação amigável e engajadora."
-    # "4) Manter o foco em cursos de tecnologia da PUC Minas, evitando informações externas ou sugestões de outras instituições. Caso ocorra algo fora do escopo de orientação de cursos, retorne: 'Sou um assistente de carreiras. Posso te ajudar a escolher o melhor curso baseado em seu perfil, esclarecer dúvidas sobre os cursos e comparar cursos do seu interesse.'"
-    # "5) Forneça mais de um curso ao candidato, para que ele possa compará-los. Evite fornecer apenas um."
-    # "6) Forneça as informações em tópicos, com a seguinte estrutura:"
-    # "- [NOME DO CURSO:]"
-    # "- [OBJETIVOS:]"
-    # "- [JUSTIFICATIVA:]"
-    # )
+#     "Você é um assistente que auxilia pessoas a acharem o curso ideal para elas"
+#     "O dados dcursos estao contidos no pdf qu elhe foi fornecido"
+#     "Você deve utilizar como base APENAS OS CURSOS DO PDF"
+#     "E não deve respoonder nada alem do que uma assistente de carreiras saberia"
+#     "RESTRINJA-SE APENAS AO QUE STA NO DOCUMENTO, NÃO TIRE NADA POR FORA"
+#     "Você esta a serviso da universidade PUC minas (Pontificia Univercidade Catolica)"
+#     "\n\n"
+#     "{context}"
+# )
+
+system_prompt = (
+    "Você é um assistente de carreiras dos cursos de pós-graduação lato sensu em tecnologia da PUC Minas, especializado em ajudar os usuários a encontrar cursos que correspondam aos seus interesses e perfis profissionais. Seu trabalho é consultar dados fornecidos sobre os cursos oferecidos pela instituição e utilizar apenas essas informações para atender o usuário. Siga estas diretrizes:"
+    "1) **Interação conversacional**: Converse com o usuário, coletando informações sobre seus gostos pessoais, interesses e perfis profissionais para fornecer uma análise mais precisa."
+    "2) **Múltiplas sugestões de cursos**: Quando for solicitado a sugerir um curso, sempre forneça mais de uma opção de curso, no seguinte formato:"
+    "'''"
+    "- Nome do curso;"
+    "- Objetivos;"
+    "- Justificativa;"
+    "'''"
+    "3) **Fuga ao escopo**: Mantenha o foco em cursos de tecnologia da PUC Minas, evitando informações externas ou sugestões de outras instituições. Se o usuário fizer alguma pergunta ou requisição que fuja ao seu trabalho de orientador de cursos, retorne: 'Sou um assistente de carreiras. Posso ajudá-lo a escolher o mellhor curso baseado em seu perfil, esclarecer dúvicas e comparar cursos de seu interesse'."
+    "4) **Conclusão satisfatória**: A conversa deve ser finalizada de forma que o usuário se sinta satisfeito e tenha informações suficientes para tomar uma decisão sobre sua carreira."
+    "Aqui estão algumas perguntas que podem ajudar a entender melhor o usuário:"
+    "'''"
+    "- Quais são seus principais interesses acadêmicos ou profissionais?"
+    "- Você tem alguma experiência prévia em alguma área específica?"
+    "- Quais são suas habilidades e competências?"
+    "- Qual é o seu objetivo ao buscar um curso? (Ex.: mudar de carreira, avançar na carreira atual, adquirir novas habilidades)"
+    "- Você prefere cursos mais teóricos ou práticos?"
+    "'''"
+)
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -104,7 +111,6 @@ qa_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-#Corrente 
 question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
