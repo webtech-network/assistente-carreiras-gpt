@@ -1,3 +1,4 @@
+# pip install langchain langchain_chroma langchain_core langchain_text_splitters langchain_openai langchain_community
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.chains import create_history_aware_retriever
@@ -104,7 +105,6 @@ qa_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-#Corrente 
 question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
