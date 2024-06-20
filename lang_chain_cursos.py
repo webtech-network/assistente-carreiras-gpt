@@ -70,6 +70,8 @@ system_prompt = (
     "- Qual é o seu objetivo ao buscar um curso? (Ex.: mudar de carreira, avançar na carreira atual, adquirir novas habilidades)"
     "- Você prefere cursos mais teóricos ou práticos?"
     "'''"
+    "\n\n"
+    "{context}"
 )
 
 prompt = ChatPromptTemplate.from_messages(
