@@ -121,13 +121,13 @@ rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chai
 # Vetor do chat
 chat_history = []
 
-while True:
-  # Pergunta ao usuário
-  question = input("Digite sua pergunta: ")
+def chat(question, chat_history):
+      # Processa a pergunta e gera a resposta da IA
+      ai_msg_1 = rag_chain.invoke({"input": question, "chat_history": chat_history})
+      chat_history.extend([HumanMessage(content=question), AIMessage(content=ai_msg_1["answer"])])
 
-  # Processa a pergunta e gera a resposta da IA
-  ai_msg_1 = rag_chain.invoke({"input": question, "chat_history": chat_history})
-  chat_history.extend([HumanMessage(content=question), AIMessage(content=ai_msg_1["answer"])])
+      # Imprime a resposta da IA
+      print(ai_msg_1["answer"] + "\n")
+      return chat_history
 
-  # Imprime a resposta da IA
-  print(ai_msg_1["answer"] + "\n")
+chat_history = chat('fasso ciencia da computação qual curso deveria fazer?', chat_history)
