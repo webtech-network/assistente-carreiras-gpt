@@ -1,4 +1,4 @@
-# pip install langchain langchain_chroma langchain_core langchain_text_splitters langchain_openai langchain_community
+# pip install langchain langchain_chroma langchain_core langchain_text_splitters langchain_openai langchain_community pypdf
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.chains import create_history_aware_retriever
@@ -26,16 +26,12 @@ llm = ChatOpenAI(
     # max_retries=2
     )
 
+path_vetorDb = "./DATA/vetorDB"
+
 # 1. Carregar dividir e indexar o conteudo do arquivo
-print("Inicializando")
+vectorstore = Chroma(persist_directory=path_vetorDb, embedding_function=OpenAIEmbeddings(api_key=openai_api_key))
 
-
-loader = PyPDFLoader("DATA/Cursos_completos.pdf", extract_images=False)
-docs = loader.load()
-
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-splits = text_splitter.split_documents(docs)
-vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings(api_key=openai_api_key))
+# vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings(api_key=openai_api_key), persist_directory=path_vetorDb)
 retriever = vectorstore.as_retriever()
 
 # 2. Incorporar o retriver dentro da corrente de resposta do chat

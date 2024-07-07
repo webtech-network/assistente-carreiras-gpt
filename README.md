@@ -44,7 +44,7 @@ para instalar todas as dependencias nessesarias são
 espera o comando abaixo desta linha específica ser concluído
 
 ```bash
-pip install langchain langchain_chroma langchain_core langchain_text_splitters langchain_openai langchain_community
+pip install langchain langchain_chroma langchain_core langchain_text_splitters langchain_openai langchain_community pypdf
 ```
 
 > [!important]
