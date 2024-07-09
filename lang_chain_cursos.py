@@ -1,3 +1,7 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.chains import create_history_aware_retriever
@@ -14,7 +18,7 @@ from langchain_community.document_loaders import PyPDFLoader
 
 # Caso não seja possivel colocar a chave nas variaveis de ambiente incira manualmente aqui
 # Senao deixe vazio
-openai_api_key=""
+openai_api_key="sk-proj-NNyucbht5JL4bDirqYaHT3BlbkFJg1VkFu5D1J7rHJobux4q"
 
 llm = ChatOpenAI(
     model="gpt-4o",
