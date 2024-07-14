@@ -15,7 +15,7 @@ from langchain_community.document_loaders import PyPDFLoader
 
 # Caso não seja possivel colocar a chave nas variaveis de ambiente incira manualmente aqui
 # Senao deixe vazio
-openai_api_key=""
+openai_api_key="sk-proj-NNyucbht5JL4bDirqYaHT3BlbkFJg1VkFu5D1J7rHJobux4q"
 
 llm = ChatOpenAI(
     model="gpt-4o",
@@ -115,15 +115,21 @@ rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chai
 
 
 # Vetor do chat
-chat_history = []
 
-def chat(question, chat_history):
+def chat(question, history):
+      chat_history = []
+      
+      #Cria a janela de contexto 
+      for msg in history:
+            if msg["type"] == "human":
+                  chat_history.extend([HumanMessage(content=msg["content"])])
+            elif msg["type"] == "ai":
+                  chat_history.extend([AIMessage(content=msg["content"])])
+                  
       # Processa a pergunta e gera a resposta da IA
       ai_msg_1 = rag_chain.invoke({"input": question, "chat_history": chat_history})
-      chat_history.extend([HumanMessage(content=question), AIMessage(content=ai_msg_1["answer"])])
+      chat_history.extend([ AIMessage(content=ai_msg_1["answer"])])
 
       # Imprime a resposta da IA
-      print(ai_msg_1["answer"] + "\n")
-      return chat_history
+      return ai_msg_1["answer"]
 
-chat_history = chat('fasso ciencia da computação qual curso deveria fazer?', chat_history)
