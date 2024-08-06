@@ -1,0 +1,14 @@
+{
+  "name": "assistente-carreiras-gpt",
+  "version": "1.0.0",
+  "description": "- [Motivação](#Motivação) - [Ferramentas](#Ferramentas) - [Partições do Código](#Partições-do-código) - [Run](#Run)",
+  "main": "assistente.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "langchain": "^0.2.12"
+  }
+}
