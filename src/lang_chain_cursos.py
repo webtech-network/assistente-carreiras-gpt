@@ -24,7 +24,7 @@ llm = ChatOpenAI(
     api_key=openai_api_key,
     # timeout=None,
     # max_retries=2
-    )
+)
 
 # 1. Carregar dividir e indexar o conteudo do arquivo
 print("Inicializando")
