@@ -5,7 +5,7 @@
 - Testar e iterar continuamente.
 
 ### Problemas 
-- O assistente confundo os nomes dos cursos e atributos dos cursos.
+- O assistente confunde os nomes dos cursos e atributos dos cursos.
 
 ### Estratégias
 - FineTuning.
