@@ -7,6 +7,14 @@
 ### Problemas 
 - O assistente confundo os nomes dos cursos e atributos dos cursos.
 
+### Estratégias
+- FineTuning.
+    - Acostumar mais o modelo ao tipo de textos e informações desejadas.
+    - Ajuste de saídas desejadas vs indesejadas.
+- Rag.
+    - Melhoria no retrieval de documentos.
+    - Melhorias na arquitetura e hiperparâmetros.
+
 ### Divisão de Responsabilidades
 
 #### Cláudio Augusto
