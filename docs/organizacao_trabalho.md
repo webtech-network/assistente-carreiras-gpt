@@ -26,6 +26,7 @@
 - Estudar langsmith para processo de testes e tracking (reunião na próxima semana).
 - GridSearch (otimização de parâmetros para a saída).
 - Ajudar na documentação.
+- Organizar Kanban.
 
 #### Henrique Nahim
 - Estudar langsmith para processo de testes e tracking (reunião na próxima semana).
@@ -38,6 +39,3 @@
 #### Gabriel
 - Estudar langsmith para processo de testes e tracking (reunião na próxima semana).
 - Estudar iterações de prompt.
-
-#### Sirius - Continua? 1 : 0; 
-- Kanban.
