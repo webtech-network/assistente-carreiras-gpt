@@ -1,17 +1,17 @@
 #%%
 #! pip install langchain langchain_chroma langchain_core langchain_text_splitters langchain_openai langchain_community
 #%%
-from typing import Dict, Any, List, Union
+from typing import Any, Union
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.chains import create_history_aware_retriever
-from langchain.chains import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
+#ChromaBD: banco de dados NoSQL(Vetorial, funciona como uma HashTable)
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.runnables import Runnable
+from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
@@ -31,9 +31,7 @@ llm: ChatOpenAI = ChatOpenAI(
 
 # Carrega o pdf
 loader: PyPDFLoader = PyPDFLoader("assistente-carreiras-gpt/assets/DATA/Cursos_completos.pdf", extract_images=False)
-docs: List[Dict[str, Any]] = loader.load()
-
-# Split no texto e criação da vectorstore com os tokens
+docs: list[Document] = loader.load()
 
 text_splitter: RecursiveCharacterTextSplitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 """
@@ -43,7 +41,7 @@ Cria uma instância de RecursiveCharacterTextSplitter, um utilitário para divid
   Isso é útil para garantir que o contexto não se perca entre as divisões de texto.
 """
 
-splits: list[Dict[str, Any]] = text_splitter.split_documents(docs)
+splits: list[Document] = text_splitter.split_documents(docs)
 """
 Usa o método split_documents() da instância text_splitter para dividir o conteúdo de 'docs' em pedaços menores.
 - docs: A variável que contém os documentos carregados do PDF, que são inicialmente um grande bloco de texto.
@@ -61,17 +59,17 @@ Cria um vetor de armazenamento (vectorstore) usando a biblioteca Chroma para arm
 - vectorstore: Um objeto que armazena embeddings para todos os pedaços de texto fornecidos, permitindo operações de recuperação e busca baseadas em similaridade semântica.
 """
 
-retriever = vectorstore.as_retriever()
+#Dá pra otimizar os parâmetros pra busca ser mais eficiente no futuro, como um threshold de similaridade mínimo
+#Entender fórmula do MMR
+retriever: object = vectorstore.as_retriever()
 """
 Converte o vectorstore em um retriever, que é uma interface para buscar textos semelhantes.
 - vectorstore.as_retriever(): Método que cria um objeto retriever a partir do vectorstore. O retriever é usado para consultas de recuperação de documentos.
-- retriever: Um objeto que permite buscar pedaços de texto que são semanticamente similares a uma query fornecida. Isso é útil em aplicações como chatbots, sistemas de recomendação e motores de busca de documentos.
+- retriever: Um objeto que permite buscar pedaços de texto que são semanticamente similares a uma query fornecida. 
+             Isso é útil em aplicações como chatbots, sistemas de recomendação e motores de busca de documentos.
 """
 
-
 # 2. Incorporar o retriver dentro da corrente de resposta do chat
-#Formato que o framework passa as mensagens do sistema e usuário para chain
-#System Prompt
 system_prompt = (
     "Você é um assistente de carreiras dos cursos de pós-graduação lato sensu em tecnologia da PUC Minas, especializado em ajudar os usuários a encontrar cursos que correspondam aos seus interesses e perfis profissionais. Seu trabalho é consultar dados fornecidos sobre os cursos oferecidos pela instituição e utilizar apenas essas informações para atender o usuário. Siga estas diretrizes:"
     "0) **Interação conversacional**: Converse com o usuário, coletando informações sobre seus gostos pessoais, interesses e perfis profissionais para fornecer uma análise mais precisa."
@@ -102,8 +100,9 @@ prompt: ChatPromptTemplate = ChatPromptTemplate.from_messages(
     ]
 )
 
-#TODO: entender essa parte
+# Uma chain Runnable
 question_answer_chain: Runnable[dict[str, Any], Any] = create_stuff_documents_chain(llm, prompt)
+# Chain que utiliza o retriever para recuperar os dados, question_answer_chain para combinar os dados em uma resposta
 rag_chain: object = create_retrieval_chain(retriever, question_answer_chain)
 
 # Adicionando Historico do chat
@@ -157,6 +156,3 @@ while True:
 
   # Imprime a resposta da IA
   print(ai_msg_1["answer"] + "\n")
-
-#Testes LangSmith
-
